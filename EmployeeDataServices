@@ -1,0 +1,64 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication2.Models;
+
+namespace WebApplication2.Services
+
+//namespace WebApplication2.Services
+{
+    public class EmployeeDataService : IDataService<Employee, int>
+    {
+        BajajCompanyContext ctx;
+
+        public EmployeeDataService(BajajCompanyContext ctx)
+        {
+            this.ctx = ctx;
+        }
+
+        async Task<Employee> IDataService<Employee, int>.CreateAsync(Employee entity)
+        {
+            //throw new NotImplementedException();
+            var result = await ctx.Employees.AddAsync(entity);
+            await ctx.SaveChangesAsync();
+            return result.Entity;
+        }
+
+        async Task<Employee> IDataService<Employee, int>.DeleteAsync(int id)
+        {
+            // throw new NotImplementedException();
+            var rec = await ctx.Employees.FindAsync(id);
+            ctx.Employees.Remove(rec);
+            await ctx.SaveChangesAsync();
+            return rec;
+
+        }
+
+        async Task<IEnumerable<Employee>> IDataService<Employee, int>.GetAsync()
+        {
+            // throw new NotImplementedException();
+            return await ctx.Employees.ToListAsync();
+        }
+
+        async Task<Employee> IDataService<Employee, int>.GetAsync(int id)
+        {
+            // throw new NotImplementedException();
+            return await ctx.Employees.FindAsync(id);
+
+        }
+
+        async Task<Employee> IDataService<Employee, int>.UpdateAsync(int id, Employee entity)
+        {
+            //throw new NotImplementedException();
+            var rec = await ctx.Employees.FindAsync(id);
+            if (rec != null)
+            {
+                rec.EmpNo = entity.EmpNo;
+                rec.EmpName = entity.EmpName;
+                rec.Designation = entity.Designation;
+                rec.Salary = entity.Salary;
+                await ctx.SaveChangesAsync();
+                return rec;
+            }
+            return null;
+        }
+    }
+}
